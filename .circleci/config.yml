@@ -1,0 +1,36 @@
+version: 2.1
+
+orbs:
+  discord: antonioned/discord@0.1.0
+
+workflows:
+  build:
+    jobs:
+      - build:
+          context:
+            - sixedge
+          
+jobs:
+  build:
+    docker:
+      - image: circleci/buildpack-deps:stretch
+    steps:
+      - checkout
+      - setup_remote_docker
+      - run:
+          name: Login at Docker Hub
+          command: docker login -u "$DOCKER_USERNAME" -p "$DOCKER_PASSWORD"
+      - run:
+          name: Build Docker image
+          command: docker build -t my-image .
+      - run:
+          name: Tag Docker image
+          command: docker tag my-image $DOCKER_USERNAME/core:latest
+      - run:
+          name: Push image to Docker registry
+          command: docker push $DOCKER_USERNAME/core:latest
+      - discord/status:
+          fail_only: false
+          success_message: ":+1: **${CIRCLE_USERNAME}** deployed **${CIRCLE_JOB}** to docker HUB with tags **latest** and **${CIRCLE_BUILD_NUM}**."
+          failure_message: ":sob: **${CIRCLE_USERNAME}**'s build: **${CIRCLE_JOB}** failed."
+          webhook: "${DISCORD_STATUS_WEBHOOK}"
