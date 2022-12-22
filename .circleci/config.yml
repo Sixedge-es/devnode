@@ -25,10 +25,10 @@ jobs:
           command: docker build -t my-image .
       - run:
           name: Tag Docker image
-          command: docker tag my-image $DOCKER_USERNAME/core:latest
+          command: docker tag my-image $DOCKER_USERNAME/devnode:latest
       - run:
           name: Push image to Docker registry
-          command: docker push $DOCKER_USERNAME/core:latest
+          command: docker push $DOCKER_USERNAME/devnode:latest
       - discord/status:
           fail_only: false
           success_message: ":+1: **${CIRCLE_USERNAME}** deployed **${CIRCLE_JOB}** to docker HUB with tags **latest** and **${CIRCLE_BUILD_NUM}**."
